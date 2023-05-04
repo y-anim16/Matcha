@@ -24,6 +24,8 @@ def MovePivot2Component():
         # Get vertex positions from selected edge
         vertexes = cmds.polyListComponentConversion(fromEdge=True, toVertex=True)
         vertexPositions = [cmds.xform(vertex, query=True, translation=True, worldSpace=True) for vertex in vertexes]
+        if len(vertexPositions) == 1:
+            vertexPositions = getPositionsFromSlice(vertexPositions)
         newVertexPos = getCenterPosition(vertexPositions)
 
         # Change to object mode
@@ -39,12 +41,7 @@ def MovePivot2Component():
         vertexes = cmds.polyListComponentConversion(fromFace=True, toVertex=True)
         vertexPositions = [cmds.xform(vertex, query=True, translation=True, worldSpace=True) for vertex in vertexes]
         if len(vertexPositions) < 4:
-            positionListTable = []
-            for vertexPos in vertexPositions:
-                positionList = [vertexPos[i:i+3] for i in range(0, len(vertexPos), 3)]
-                for pos in positionList:
-                    positionListTable.append(pos)
-            vertexPositions = positionListTable
+            vertexPositions = getPositionsFromSlice(vertexPositions)
         newVertexPos = getCenterPosition(vertexPositions)
 
         # Change to object mode
@@ -55,6 +52,14 @@ def MovePivot2Component():
         return
     
     cmds.error("Please select vertex or edge or face")
+
+def getPositionsFromSlice(vertexPositions):
+    positionListTable = []
+    for positions in vertexPositions:
+        positionList = [positions[i:i+3] for i in range(0, len(positions), 3)]
+        for pos in positionList:
+            positionListTable.append(pos)
+    return positionListTable
 
 def changeModeToObject():
     mel.eval("toggleSelMode")
