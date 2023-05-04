@@ -24,7 +24,6 @@ def MovePivot2Component():
         # Get vertex positions from selected edge
         vertexes = cmds.polyListComponentConversion(fromEdge=True, toVertex=True)
         vertexPositions = [cmds.xform(vertex, query=True, translation=True, worldSpace=True) for vertex in vertexes]
-        
         newVertexPos = getCenterPosition(vertexPositions)
 
         # Change to object mode
@@ -36,8 +35,23 @@ def MovePivot2Component():
     
     face_list = cmds.filterExpand(selected, selectionMask=34)
     if face_list:
-        print("Selected is face")
-        print(face_list)
+        # Get vertex positions from selected face
+        vertexes = cmds.polyListComponentConversion(fromFace=True, toVertex=True)
+        vertexPositions = [cmds.xform(vertex, query=True, translation=True, worldSpace=True) for vertex in vertexes]
+        if len(vertexPositions) < 4:
+            positionListTable = []
+            for vertexPos in vertexPositions:
+                positionList = [vertexPos[i:i+3] for i in range(0, len(vertexPos), 3)]
+                for pos in positionList:
+                    positionListTable.append(pos)
+            vertexPositions = positionListTable
+        newVertexPos = getCenterPosition(vertexPositions)
+
+        # Change to object mode
+        changeModeToObject()
+
+        # Move pivot
+        movePivot(newVertexPos)
         return
     
     cmds.error("Please select vertex or edge or face")
