@@ -10,7 +10,7 @@ def ExportCameraFBX():
     DuplicateRenderer(renderer_name)
     SetParentConstraint(rig_cam_name, renderer_name)
     BakeSimulation(renderer_name)
-    #Export(renderer_name)
+    Export(renderer_name)
 
 def SelectRenderer(rig_cam_name):
     cmds.select(clear=True)
@@ -54,14 +54,8 @@ def Export(renderer_name):
 
     # エクスポート先のFBXファイル名を設定
     file_name_without_extension, _ = os.path.splitext(os.path.basename(scene_file_name))
-    export_path = os.path.join(scene_file_dir, file_name_without_extension + "_camera")
+    export_path = scene_file_dir + "/"  + file_name_without_extension + "_camera.fbx"
 
-    # FBXエクスポートのオプションを設定
-    #export_options = "-s -f \"FBX export\" -ea \"%s\"" % export_path
-    export_options = "-s -f \"FBX export\" -ea \"%s\"" % file_name_without_extension + "_camera"
-
-    # FBXファイルにエクスポート
-    cmds.file(export_options, exportAll=True, type="FBX export", force=True)
-
-    print("succeed")
+    # FBXファイルでエクスポート
+    mel.eval('file -force -options \"v=0;\" -typ \"FBX export\" -pr -es \"%s\";' % export_path)
 
